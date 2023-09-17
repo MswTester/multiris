@@ -14,7 +14,7 @@ export const links: LinksFunction = () => [
   ...(cssBundleHref ? [{ rel: "stylesheet", href: cssBundleHref }] : []),
   { rel:'preconnect', href:'https://fonts.googleapis.com' },
   { rel:'preconnect', href:"https://fonts.gstatic.com", crossOrigin:'use-credentials'},
-  { rel:'stylesheet', href:'https://fonts.googleapis.com/css2?family=Anton&display=swap'},
+  { rel:'stylesheet', href:'https://fonts.googleapis.com/css2?family=Anton&family=Roboto+Mono&family=Black+Ops+One&display=swap'},
 ];
 
 export default function App() {
