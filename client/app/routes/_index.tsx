@@ -5,7 +5,7 @@ import {io} from 'socket.io-client'
 export const meta: MetaFunction = () => {
   return [
     { title: "Multiris" },
-    { name: "description", content: "Welcome to Remix!" },
+    { name: "description", content: "Multi Modern Tetris (by MswTester)" },
   ];
 };
 

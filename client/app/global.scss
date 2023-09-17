@@ -111,4 +111,12 @@
       user-select: none;
       cursor: default;
     }
+    form{
+      input, button{
+        padding: 10px;
+        margin: 10px;
+        border-radius: 10px;
+        border: 0;
+      }
+    }
   }

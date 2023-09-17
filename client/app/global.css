@@ -11958,5 +11958,11 @@ textarea.form-control-lg {
   user-select: none;
   cursor: default;
 }
+.l-main form input, .l-main form button {
+  padding: 10px;
+  margin: 10px;
+  border-radius: 10px;
+  border: 0;
+}
 
 /*# sourceMappingURL=global.css.map */
