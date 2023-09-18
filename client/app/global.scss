@@ -37,6 +37,7 @@
   --callout-rgb: rgb(238, 240, 241);
   --callout-border-rgb: rgb(172, 175, 176);
   --card-rgb: rgb(180, 185, 188);
+  --card2-rgb: rgb(230, 235, 238);
   --card-border-rgb: rgb(131, 134, 135);
 }
 
@@ -69,6 +70,7 @@
     --callout-rgb: rgb(20, 20, 20);
     --callout-border-rgb: rgb(108, 108, 108);
     --card-rgb: rgb(100, 100, 100);
+    --card2-rgb: rgb(50, 50, 50);
     --card-border-rgb: rgb(200, 200, 200);
   }
 }
@@ -86,6 +88,7 @@ body {
   overflow-y: hidden;
   width: 100vw;
   height: 100vh;
+  font-family: 'Black Han Sans';
 }
 
 @media (prefers-color-scheme: dark) {
@@ -97,6 +100,7 @@ body {
 @import "../node_modules/bootstrap/scss/bootstrap";
 
 .main{
+  font-family: 'Black Han Sans';
   width: 100vw;
   height: 100vh;
   background-color: var(--background-start-rgb);
@@ -133,6 +137,7 @@ body {
     }
   }
   .desc{
+    font-weight: lighter;
     color: var(--foreground-rgb);
     text-decoration: underline;
     user-select: none;
@@ -140,6 +145,7 @@ body {
     font-size: max(min(1vw, 2vh), 15px);
   }
   .register{
+    font-weight: lighter;
     color: blue;
     text-decoration: underline;
     user-select: none;
@@ -147,12 +153,14 @@ body {
     font-size: max(min(1vw, 2vh), 15px);
   }
   .errorline{
+    font-weight: lighter;
     color: red;
     font-size: max(min(1vw, 2vh), 15px);
   }
 }
 
 .b-main{
+  font-weight: lighter;
   display: flex;
   flex-direction: column;
   text-align: center;
@@ -180,13 +188,16 @@ body {
     cursor: default;
   }
   .container{
+    font-weight: lighter;
     display: flex;
     flex-direction: column;
     text-align: center;
     justify-content: space-around;
     gap: 5vh;
+    padding: 0;
     div:not(.form){
-      font-family: 'Black Ops One';
+      font-family: 'Black Han Sans';
+      font-weight: lighter;
       font-size: min(max(min(4vw, 8vh), 20px), 30px);
       user-select: none;
       cursor: pointer;
@@ -204,12 +215,108 @@ body {
       margin: 0 auto;
     }
     .form{
+      font-family: 'Black Han Sans';
+      font-weight: lighter;
+      display: flex;
+      flex-direction: row;
       width: 100%;
       height: 70vh;
       overflow-x: hidden;
       overflow-y: auto;
       border-radius: max(2vw, 4vh);
       background-color: var(--callout-rgb);
+      .submenu{
+        font-family: unset;
+        justify-content: space-around;
+        width: 30%;
+        height: 100%;
+        font-size: min(max(min(1.5vw, 3vh), 14px), 26px);
+        border-radius: max(2vw, 4vh) 0 0 max(2vw, 4vh);
+        background-color: var(--tile-end-rgb);
+        text-align: center;
+        div{
+          font-family: unset;
+          margin: 0 auto;
+          min-width: 20px;
+          max-width: none;
+          max-height: none;
+          min-height: 20px;
+          height: auto;
+          display: flex;
+          width: 80%;
+          padding: 0;
+          justify-content: space-around;
+          font-size: min(max(min(1.5vw, 3vh), 14px), 26px);
+          flex-direction: row;
+          background-color: transparent;
+          input, button{
+            font-family: unset;
+            width: 100%;
+            padding: min(1vh, 0.5vw);
+            text-align: center;
+            &[type="checkbox"]{
+              width: max-content;
+              min-width: 20px;
+              min-height: 20px;
+            }
+          }
+        }
+      }
+      .contents{
+        font-size: min(max(min(1.5vw, 3vh), 14px), 26px);
+        width: 70%;
+        padding: min(1.5vh, 3vw);
+        input{
+          width: 100%;
+          text-align: center;
+        }
+        .rooms{
+          width: 100%;
+          display: block;
+          .room{
+            margin: max(1vh, 2vw) auto;
+            width: 95%;
+            min-width: none;
+            max-width: none;
+            height: min-content;
+            min-height: 10px;
+            background-color: var(--card2-rgb);
+            border-radius: 20px;
+            div{
+              width: 100%;
+              background-color: transparent;
+              height: min-content;
+              &.name{
+                font-size: min(max(min(2vw, 4vh), 18px), 32px);
+              }
+              &.code{
+                font-size: min(max(min(1.5vw, 3vh), 14px), 26px);
+                color: blue;
+              }
+              &.player{
+                font-size: min(max(min(1.5vw, 3vh), 14px), 26px);
+                color: lightgreen;
+              }
+            }
+            button{
+              font-size: min(max(min(1.5vw, 3vh), 14px), 26px);
+            }
+          }
+        }
+      }
+      div{
+        border-radius: 0;
+        padding: 0;
+        margin: 0;
+        font-family: unset;
+        cursor: default;
+        height: 100%;
+        min-width: 200px;
+        max-width: none;
+        max-height: none;
+        min-height: none;
+        overflow-y: auto;
+      }
     }
   }
 }

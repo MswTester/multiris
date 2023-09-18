@@ -55,6 +55,26 @@ const langs:{[key:string]:{[key:string]:string}} = {
         'ko':'이미 사용된 닉네임입니다.',
         'en':'This nickname is already used.',
     },
+    'enter room name':{
+        'ko':'방 이름을 입력해주세요.',
+        'en':'Enter your room name.',
+    },
+    'enter password':{
+        'ko':'비밀번호를 입력해주세요.',
+        'en':'Enter your room password.',
+    },
+    'create room':{
+        'ko':'방 생성',
+        'en':'Create room',
+    },
+    'enter room code':{
+        'ko':'방 코드을 입력하여 참여하세요.',
+        'en':'Enter a room code to join.',
+    },
+    'join':{
+        'ko':'참가',
+        'en':'join',
+    },
 }
 
 export function toLang(lang:string, data:string){
