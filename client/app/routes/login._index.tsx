@@ -6,7 +6,7 @@ import { sha256 } from "~/data/utils"
 
 export const meta: MetaFunction = () => {
     return [
-        { title: "Multiris - Login" },
+        { title: "MULTIRIS - Login" },
         { name: "description", content: "Multi Modern Tetris (by MswTester)" },
     ];
 };

@@ -55,6 +55,70 @@ const langs:{[key:string]:{[key:string]:string}} = {
         'ko':'이미 사용된 닉네임입니다.',
         'en':'This nickname is already used.',
     },
+    'enter room name':{
+        'ko':'방 이름을 입력해주세요.',
+        'en':'Enter your room name.',
+    },
+    'enter password':{
+        'ko':'비밀번호를 입력해주세요.',
+        'en':'Enter your room password.',
+    },
+    'create room':{
+        'ko':'방 생성',
+        'en':'Create room',
+    },
+    'enter room code':{
+        'ko':'방 코드을 입력하여 참여하세요.',
+        'en':'Enter a room code to join.',
+    },
+    'join':{
+        'ko':'참가',
+        'en':'Join',
+    },
+    'back':{
+        'ko':'뒤로',
+        'en':'Back',
+    },
+    'gamemode':{
+        'ko':'게임모드',
+        'en':'GameMode',
+    },
+    'ffa':{
+        'ko':'개인전',
+        'en':'Free For All',
+    },
+    'tdm':{
+        'ko':'팀 데스매치',
+        'en':'Team Deathmatch',
+    },
+    'com':{
+        'ko':'코어 매치',
+        'en':'Core Match',
+    },
+    'maxplayer':{
+        'ko':'최대 플레이어',
+        'en':'Max Player',
+    },
+    'room public setting':{
+        'ko':'방 공개 설정',
+        'en':'Room Public Settings',
+    },
+    'public':{
+        'ko':'공개',
+        'en':'Public',
+    },
+    'private':{
+        'ko':'비공개',
+        'en':'Private',
+    },
+    'board rows':{
+        'ko':'보드 가로줄',
+        'en':'Board Rows',
+    },
+    'board cols':{
+        'ko':'보드 세로줄',
+        'en':'Board Columns',
+    },
 }
 
 export function toLang(lang:string, data:string){
