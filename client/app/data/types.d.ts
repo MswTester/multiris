@@ -4,4 +4,5 @@ export interface getroom{
     player:number;
     max:number;
     owner:string;
+    public:boolean;
 }

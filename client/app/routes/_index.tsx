@@ -178,12 +178,13 @@ const Lobby:FC = () => {
             <div className="rooms">
               {
                 rooms.map((v, i) => (
+                  v.public ?
                   <div className="room" key={i}>
                     <div className="name">{v.name}</div>
                     <div className="code">#{v.code}</div>
                     <div className="player">{v.owner} - {v.player}/{v.max}</div>
                     <button>{toLang(lang, 'join')}</button>
-                  </div>
+                  </div> : <></>
                 ))
               }
             </div>
@@ -213,16 +214,18 @@ const Room:FC = () => {
   const [rows, setRows] = useState<number>(10);
   const [cols, setCols] = useState<number>(20);
 
-  const roomSettingUpdate = () => {
+  useEffect(() => {
     socket.emit('updateRoomSetting', {gamemode, maxplayer, roompublic, rows, cols})
-  }
+  }, [gamemode, maxplayer, roompublic, rows, cols])
   return <>
     <div className="form">
-      <div className="ds"></div>
+      <div className="ds">
+
+      </div>
       <div className="ps"></div>
       <div className="os">
         <div>{toLang(lang, 'gamemode')}
-        <select name="" id="" value={gamemode} onChange={e => setGamemode(e.target.value)}>
+        <select name="" id="" value={gamemode} onChange={e => {setGamemode(e.target.value);}}>
           {['ffa', 'tdm', 'com'].map((v, i) => (
             <option value={v} key={i}>{toLang(lang, v)}</option>
           ))}
@@ -231,10 +234,10 @@ const Room:FC = () => {
         <input type="number" min={2} max={20} name="" id="" value={maxplayer}
         onChange={e => {
           let n = +e.target.value
-          setMaxplayer(n < 2 ? 2 : n > 20 ? 20 : n)
+          setMaxplayer(n < 2 ? 2 : n > 20 ? 20 : n);
         }} placeholder={toLang(lang, 'maxplayer')} /></div>
         <div>{toLang(lang, 'room public setting')}
-        <select name="" id="" value={roompublic} onChange={e => setRoompublic(e.target.value)}>
+        <select name="" id="" value={roompublic} onChange={e => {setRoompublic(e.target.value);}}>
           {['public', 'private'].map((v, i) => (
             <option value={v} key={i}>{toLang(lang, v)}</option>
             ))}
@@ -243,13 +246,13 @@ const Room:FC = () => {
         <input type="number" min={4} max={40} name="" id="" value={rows}
         onChange={e => {
           let n = +e.target.value
-          setRows(n < 4 ? 4 : n > 40 ? 40 : n)
+          setRows(n < 4 ? 4 : n > 40 ? 40 : n);
         }} placeholder={toLang(lang, 'board rows')} /></div>
         <div>{toLang(lang, 'board cols')}
         <input type="number" min={4} max={40} name="" id="" value={cols}
         onChange={e => {
           let n = +e.target.value
-          setCols(n < 4 ? 4 : n > 40 ? 40 : n)
+          setCols(n < 4 ? 4 : n > 40 ? 40 : n);
         }} placeholder={toLang(lang, 'board cols')} /></div>
       </div>
     </div>
