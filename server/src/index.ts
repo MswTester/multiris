@@ -78,6 +78,7 @@ io.on('connection', (socket) => {
         ispass:v.usePassword,
         code:v.code,
         max:v.max,
+        public:v.isPublic,
         player:v.players.length,
         owner:users[Object.keys(rooms)[i]].nickname
       }
@@ -108,7 +109,14 @@ io.on('connection', (socket) => {
   })
 
   socket.on('updateRoomSetting', (d) => {
-
+    let thisRoom = rooms[socket.id]
+    thisRoom.isPublic = d['roompublic'] == 'public'
+    thisRoom.rows = d['rows']
+    thisRoom.cols = d['cols']
+    thisRoom.mode = d['gamemode']
+    thisRoom.max = d['maxplayer']
+    console.log(d)
+    updateGlobalRoom()
   })
 
   socket.on('disconnect', e => {
