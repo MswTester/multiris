@@ -79,7 +79,8 @@ io.on('connection', (socket) => {
         code:v.code,
         max:v.max,
         player:v.players.length,
-        owner:users[Object.keys(rooms)[i]].nickname
+        owner:users[Object.keys(rooms)[i]].nickname,
+        ownerguest:users[Object.keys(rooms)[i]].guest,
       }
     })
     socket.emit('updateRoom', rssend)

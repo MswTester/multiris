@@ -119,6 +119,10 @@ const langs:{[key:string]:{[key:string]:string}} = {
         'ko':'보드 세로줄',
         'en':'Board Columns',
     },
+    'guest':{
+        'ko':'게스트',
+        'en':'Guest',
+    },
 }
 
 export function toLang(lang:string, data:string){

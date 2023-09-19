@@ -79,6 +79,7 @@ return json({ ok :true })
 export default function Index() {
   const [lang, setLang] = useState<string>('en-US')
   const [nickname, setNickname] = useState<string>('')
+  const [isGuest, setIsGuest] = useState<boolean>(true)
   const [isLogined, setIsLogined] = useState<boolean>(false);
   const [isInRoom, setIsInRoom] = useState<boolean>(false)
   const location = useLocation();
@@ -94,6 +95,7 @@ export default function Index() {
         if(debugMode) return
         if(d) navigate('/login?res=already')
       })
+      res.length == 3 ? setIsGuest(false) : false
       socket.emit('checkNickExist', res[1][1])
       socket.emit('sucLogin', res.map(v => v[1]))
       setNickname(res[1][1])
@@ -105,6 +107,7 @@ export default function Index() {
   return <GlobalContext.Provider value={{
     isInRoom, setIsInRoom,
     nickname, setNickname,
+    isGuest, setIsGuest,
     lang, setLang,
   }}>
     {isLogined ? <Lobby /> :
@@ -124,6 +127,7 @@ const Lobby:FC = () => {
   const [rooms, setRooms] = useState<getroom[]>([])
   const {isInRoom, setIsInRoom} = useContext(GlobalContext);
   const {nickname, setNickname} = useContext(GlobalContext);
+  const {isGuest, setIsGuest} = useContext(GlobalContext);
 
   useEffect(() => {
     setLang(navigator.language)
@@ -196,7 +200,7 @@ const Lobby:FC = () => {
       </div>:<></>
       }
     </div>
-    <div className="profile">{nickname}</div>
+    <div className="profile">{isGuest ? `(${toLang(lang, 'guest')})` : ''}{nickname}</div>
     {mainMenu != -1 && !isInRoom ? <div className="back" onClick={e => setMainMenu(-1)}>{toLang(lang, 'back')}</div> : <></>}
   </div>
 }
@@ -209,7 +213,7 @@ const Room:FC = () => {
   const [rows, setRows] = useState<number>(10);
   const [cols, setCols] = useState<number>(20);
 
-  const roomSettingsUpdate = () => {
+  const roomSettingUpdate = () => {
     socket.emit('updateRoomSetting', {gamemode, maxplayer, roompublic, rows, cols})
   }
   return <>
