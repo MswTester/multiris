@@ -78,10 +78,12 @@ return json({ ok :true })
 
 export default function Index() {
   const [lang, setLang] = useState<string>('en-US')
-  const [nickname, setNickname] = useState<string>('')
-  const [isGuest, setIsGuest] = useState<boolean>(true)
-  const [isLogined, setIsLogined] = useState<boolean>(false);
-  const [isInRoom, setIsInRoom] = useState<boolean>(false)
+  const [myId, setMyId] = useState<string>('') // my socket id
+  const [nickname, setNickname] = useState<string>('') // my nickname
+  const [isGuest, setIsGuest] = useState<boolean>(true) // am i guest
+  const [isLogined, setIsLogined] = useState<boolean>(false); // is logined
+  const [isInRoom, setIsInRoom] = useState<boolean>(false) // is in room
+  const [targetRoom, setTargetRoom] = useState<string>('') // room owner id
   const location = useLocation();
   const navigate = useNavigate();
   const queryParams = new URLSearchParams(location.search)
@@ -96,6 +98,9 @@ export default function Index() {
         if(d) navigate('/login?res=already')
       })
       res.length == 3 ? setIsGuest(false) : false
+      socket.on('getMyId', (d:string) => {
+        setMyId(d)
+      })
       socket.emit('checkNickExist', res[1][1])
       socket.emit('sucLogin', res.map(v => v[1]))
       setNickname(res[1][1])
@@ -109,6 +114,8 @@ export default function Index() {
     nickname, setNickname,
     isGuest, setIsGuest,
     lang, setLang,
+    myId, setMyId,
+    targetRoom, setTargetRoom,
   }}>
     {isLogined ? <Lobby /> :
     <div className="b-main main">
@@ -125,9 +132,14 @@ const Lobby:FC = () => {
   const [rc_name, setRc_name] = useState<string>('')
   const [rc_pass, setRc_pass] = useState<string>('')
   const [rooms, setRooms] = useState<getroom[]>([])
+  const [error, setError] = useState<string>('')
+  const [msgbox, setMsgbox] = useState<number>(0)
+  const [inputPass, setInputPass] = useState<string>('')
+  const [errorPass, setErrorPass] = useState<boolean>(false)
   const {isInRoom, setIsInRoom} = useContext(GlobalContext);
   const {nickname, setNickname} = useContext(GlobalContext);
   const {isGuest, setIsGuest} = useContext(GlobalContext);
+  const {targetRoom, setTargetRoom} = useContext(GlobalContext);
 
   useEffect(() => {
     setLang(navigator.language)
@@ -141,6 +153,9 @@ const Lobby:FC = () => {
   })
 
   const createRoom = (e:any) => {
+    if(!rc_name) return setError('enter room name')
+    if(rc_name.length > 16) return setError('enter room name 16')
+    if(rc_isPass && !rc_pass) return setError('enter password')
     socket.emit('createRoom', {
       name:rc_name,
       pass:rc_pass,
@@ -151,11 +166,44 @@ const Lobby:FC = () => {
     setRc_name('')
     setIsInRoom(true)
     setMainMenu(-1)
+    setMsgbox(0)
   }
 
-  const updateRoom = () => {
+  const updateRoom = ():void => {
     socket.emit('updateRoom', '')
   }
+
+  const joinRoom = (id:string, ispass:boolean, pass:string, max:number, player:number) => {
+    setTargetRoom(id)
+    if(max <= player) return setMsgbox(1)
+    if(ispass) return setMsgbox(2)
+    socket.emit('joinRoom', id)
+    setRc_isPass(false)
+    setRc_pass('')
+    setRc_name('')
+    setIsInRoom(true)
+    setMainMenu(-1)
+    setMsgbox(0)
+  }
+
+  const joinRoomWithPass = () => {
+    if(rooms[targetRoom].pass == inputPass){
+      socket.emit('joinRoom', rooms[targetRoom].ownerid)
+      setRc_isPass(false)
+      setRc_pass('')
+      setRc_name('')
+      setIsInRoom(true)
+      setMainMenu(-1)
+      setMsgbox(0)
+      setInputPass('')
+    } else {
+      setErrorPass(true)
+    }
+  }
+
+  useEffect(() => {
+    setErrorPass(false)
+  }, [inputPass, msgbox])
   return <div className="y-main main">
     <div className="title">MULTIRIS</div>
     <div className="container">
@@ -167,11 +215,12 @@ const Lobby:FC = () => {
       mainMenu == 0 ? <div className="form">
           <div className="submenu">
             <div><input type="text" name="" id="" value={rc_name}
-            onChange={e => {setRc_name(e.target.value)}} placeholder={toLang(lang, 'enter room name')} /></div>
-            <div><input type="checkbox" name="" id="" checked={rc_isPass} onChange={e => {setRc_isPass(e.target.checked)}} />
+            onChange={e => {setRc_name(e.target.value);setError('')}} placeholder={toLang(lang, 'enter room name')} /></div>
+            <div><input type="checkbox" name="" id="" checked={rc_isPass} onChange={e => {setRc_isPass(e.target.checked);setError('')}} />
             <input placeholder={toLang(lang, 'enter password')} type="password" name="" id="" value={rc_pass}
-            onChange={e => {setRc_pass(e.target.value)}} disabled={!rc_isPass} /></div>
+            onChange={e => {setRc_pass(e.target.value);setError('')}} disabled={!rc_isPass} /></div>
             <div><button onClick={createRoom}>{toLang(lang, 'create room')}</button></div>
+            <div className="errorline">{error ? toLang(lang, error) : ''}</div>
           </div>
           <div className="contents">
             <input type="text" name="" id="" placeholder={toLang(lang, 'enter room code')} />
@@ -182,13 +231,25 @@ const Lobby:FC = () => {
                   <div className="room" key={i}>
                     <div className="name">{v.name}</div>
                     <div className="code">#{v.code}</div>
-                    <div className="player">{v.owner} - {v.player}/{v.max}</div>
-                    <button>{toLang(lang, 'join')}</button>
+                    <div className="player">{v.ownerguest ? `(${toLang(lang, 'guest')})` : ''}{v.owner} - {v.player}/{v.max}</div>
+                    <button onClick={e => {joinRoom(v.ownerid, v.ispass, v.pass, v.max, v.player)}}>{toLang(lang, 'join')}</button>
                   </div> : <></>
                 ))
               }
             </div>
           </div>
+          {
+            msgbox ? 
+            (<><div className="back" onMouseDown={e => setMsgbox(0)}></div>
+            <div className="msgbox">
+              <div>{msgbox == 1 ? toLang(lang, 'room is full') : msgbox == 2 ? toLang(lang, 'enter password') : ''}</div>
+              {msgbox == 2 ? <div>
+                <input onChange={e => setInputPass(e.target.value)} value={inputPass} type="password" name="" id="" />
+                <button onClick={e => joinRoomWithPass()}>{toLang(lang, 'join')}</button>
+              </div> : <></>}
+              {errorPass ? <div className="errorline">{toLang(lang, 'incorrect password')}</div> : <></>}
+            </div></>) : <></>
+          }
       </div>:
       mainMenu == 1 ? <div className="form">
           
@@ -213,10 +274,21 @@ const Room:FC = () => {
   const [roompublic, setRoompublic] = useState<string>('public');
   const [rows, setRows] = useState<number>(10);
   const [cols, setCols] = useState<number>(20);
+  const {myId, setMyId} = useContext(GlobalContext);
+  const {targetRoom, setTargetRoom} = useContext(GlobalContext);
 
   useEffect(() => {
-    socket.emit('updateRoomSetting', {gamemode, maxplayer, roompublic, rows, cols})
+    if(myId == targetRoom){
+      socket.emit('updateRoomSetting', {gamemode, maxplayer, roompublic, rows, cols})
+    }
   }, [gamemode, maxplayer, roompublic, rows, cols])
+
+  useEffect(() => {
+    socket.on('updateInRoom', (d:{[key:string]:{[key:string]:any}}) => {
+
+    })
+  }, [])
+
   return <>
     <div className="form">
       <div className="ds">
@@ -225,31 +297,31 @@ const Room:FC = () => {
       <div className="ps"></div>
       <div className="os">
         <div>{toLang(lang, 'gamemode')}
-        <select name="" id="" value={gamemode} onChange={e => {setGamemode(e.target.value);}}>
+        <select disabled={myId != targetRoom} name="" id="" value={gamemode} onChange={e => {setGamemode(e.target.value);}}>
           {['ffa', 'tdm', 'com'].map((v, i) => (
             <option value={v} key={i}>{toLang(lang, v)}</option>
           ))}
         </select></div>
         <div>{toLang(lang, 'maxplayer')}
-        <input type="number" min={2} max={20} name="" id="" value={maxplayer}
+        <input disabled={myId != targetRoom} type="number" min={2} max={20} name="" id="" value={maxplayer}
         onChange={e => {
           let n = +e.target.value
           setMaxplayer(n < 2 ? 2 : n > 20 ? 20 : n);
         }} placeholder={toLang(lang, 'maxplayer')} /></div>
         <div>{toLang(lang, 'room public setting')}
-        <select name="" id="" value={roompublic} onChange={e => {setRoompublic(e.target.value);}}>
+        <select disabled={myId != targetRoom} name="" id="" value={roompublic} onChange={e => {setRoompublic(e.target.value);}}>
           {['public', 'private'].map((v, i) => (
             <option value={v} key={i}>{toLang(lang, v)}</option>
             ))}
         </select></div>
         <div>{toLang(lang, 'board rows')}
-        <input type="number" min={4} max={40} name="" id="" value={rows}
+        <input disabled={myId != targetRoom} type="number" min={4} max={40} name="" id="" value={rows}
         onChange={e => {
           let n = +e.target.value
           setRows(n < 4 ? 4 : n > 40 ? 40 : n);
         }} placeholder={toLang(lang, 'board rows')} /></div>
         <div>{toLang(lang, 'board cols')}
-        <input type="number" min={4} max={40} name="" id="" value={cols}
+        <input disabled={myId != targetRoom} type="number" min={4} max={40} name="" id="" value={cols}
         onChange={e => {
           let n = +e.target.value
           setCols(n < 4 ? 4 : n > 40 ? 40 : n);

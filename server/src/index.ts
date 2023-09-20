@@ -18,10 +18,11 @@ interface users{[key:string]:{
   [key:string]:any;
 }}
 
-interface player{[key:string]:{
+interface players{[key:string]:{
   nickname:string; // nickname
   guest:boolean; // is guest
-  socket_id:string; // socket id
+  boardId:number; // using board's id
+  team:string; // team name
 }}
 
 interface board{
@@ -41,7 +42,7 @@ interface rooms{[key:string]:{
   mode:string; // game mode
   status:number; // 0 = waiting, 1 = playing
   boards:board[]; // tetris map boards
-  players:player[]; // player array
+  players:players; // player object
 }}
 
 const port = 3003
@@ -62,6 +63,7 @@ io.on('connection', (socket) => {
       users[socket.id] = {nickname:d[1], guest:d.length == 2}
       console.log(users)
     }
+    socket.emit('getMyId', socket.id)
   })
 
   socket.on('checkNickExist', e => {
@@ -79,13 +81,19 @@ io.on('connection', (socket) => {
         code:v.code,
         max:v.max,
         public:v.isPublic,
-        player:v.players.length,
+        player:Object.keys(v.players).length,
         owner:users[Object.keys(rooms)[i]].nickname,
         ownerguest:users[Object.keys(rooms)[i]].guest,
+        ownerid:Object.keys(rooms)[i],
       }
     })
     socket.emit('updateRoom', rssend)
     socket.broadcast.emit('updateRoom', rssend)
+  }
+
+  const updateInRoom = () => {
+    socket.emit('updateInRoom', rooms)
+    socket.broadcast.emit('updateInRoom', rooms)
   }
 
   socket.on('createRoom', (d:{[key:string]:any}) => {
@@ -101,11 +109,27 @@ io.on('connection', (socket) => {
       mode:'ffa',
       status:0,
       boards:[],
-      players:[]
+      players:{}
+    };
+    (rooms[socket.id].players)[socket.id] = {
+      nickname:users[socket.id].nickname,
+      guest:users[socket.id].guest,
+      boardId:-1,
+      team:''
     }
     updateGlobalRoom()
   })
   socket.on('updateRoom', () => {
+    updateGlobalRoom()
+  })
+
+  socket.on('joinRoom', (d:string) => {
+    rooms[d].players[socket.id] = {
+      nickname:users[socket.id].nickname,
+      guest:users[socket.id].guest,
+      boardId:-1,
+      team:''
+    }
     updateGlobalRoom()
   })
 
@@ -116,7 +140,6 @@ io.on('connection', (socket) => {
     thisRoom.cols = d['cols']
     thisRoom.mode = d['gamemode']
     thisRoom.max = d['maxplayer']
-    console.log(d)
     updateGlobalRoom()
   })
 
@@ -124,7 +147,6 @@ io.on('connection', (socket) => {
     delete users[socket.id]
     delete rooms[socket.id]
     updateGlobalRoom()
-    console.log(users)
   })
 });
 

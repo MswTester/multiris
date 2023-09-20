@@ -152,11 +152,11 @@ body {
     cursor: pointer;
     font-size: max(min(1vw, 2vh), 15px);
   }
-  .errorline{
-    font-weight: lighter;
-    color: red;
-    font-size: max(min(1vw, 2vh), 15px);
-  }
+}
+.errorline{
+  font-weight: lighter;
+  color: red;
+  font-size: max(min(1vw, 2vh), 15px);
 }
 
 .b-main{
@@ -226,6 +226,44 @@ body {
       justify-content: space-between;
       border-radius: max(2vw, 4vh);
       background-color: var(--callout-rgb);
+      .back{
+        position: absolute;
+        width: 100vw;
+        height: 100vh;
+        background-color: rgba(0, 0, 0, 0.5);
+      }
+      .msgbox{
+        flex-direction: column;
+        justify-content: space-around;
+        position: absolute;
+        min-width: 300px;
+        min-height: 200px;
+        max-width: var(--max-width);
+        max-height: max-content;
+        width: max(40vw, 60vh);
+        height: max(25vw, 40vh);
+        max-width: var(--max-width);
+        border-radius: 5vh;
+        margin: auto;
+        top: 0;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        text-align: center;
+        background-color: var(--tile-start-rgb);
+        padding: 3vh;
+        div{
+          max-width: var(--max-width);
+          width: 100%;
+          font-size: min(max(min(3vw, 6vh), 14px), 26px);
+          display: flex;
+          flex-direction: column;
+          input, button{
+            font-size: min(max(min(3vw, 6vh), 14px), 26px);
+            width: 100%;
+          }
+        }
+      }
       .submenu{
         font-family: unset;
         justify-content: space-around;

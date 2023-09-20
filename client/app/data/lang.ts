@@ -59,6 +59,10 @@ const langs:{[key:string]:{[key:string]:string}} = {
         'ko':'방 이름을 입력해주세요.',
         'en':'Enter your room name.',
     },
+    'enter room name 16':{
+        'ko':'방 이름을 16자 이내로 입력해주세요.',
+        'en':'Enter your room name within 16 characters.',
+    },
     'enter password':{
         'ko':'비밀번호를 입력해주세요.',
         'en':'Enter your room password.',
@@ -68,7 +72,7 @@ const langs:{[key:string]:{[key:string]:string}} = {
         'en':'Create room',
     },
     'enter room code':{
-        'ko':'방 코드을 입력하여 참여하세요.',
+        'ko':'방 코드를 입력하여 참여하세요.',
         'en':'Enter a room code to join.',
     },
     'join':{
@@ -122,6 +126,14 @@ const langs:{[key:string]:{[key:string]:string}} = {
     'guest':{
         'ko':'게스트',
         'en':'Guest',
+    },
+    'room is full':{
+        'ko':'방의 인원이 가득 찼습니다.',
+        'en':'Room is full.',
+    },
+    'incorrect password':{
+        'ko':'잘못된 비밀번호입니다.',
+        'en':'Incorrect password.',
     },
 }
 
