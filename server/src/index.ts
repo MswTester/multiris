@@ -118,6 +118,7 @@ io.on('connection', (socket) => {
       team:''
     }
     updateGlobalRoom()
+    updateInRoom()
   })
   socket.on('updateRoom', () => {
     updateGlobalRoom()
@@ -131,6 +132,7 @@ io.on('connection', (socket) => {
       team:''
     }
     updateGlobalRoom()
+    updateInRoom()
   })
 
   socket.on('updateRoomSetting', (d) => {
@@ -141,12 +143,19 @@ io.on('connection', (socket) => {
     thisRoom.mode = d['gamemode']
     thisRoom.max = d['maxplayer']
     updateGlobalRoom()
+    updateInRoom()
   })
 
   socket.on('disconnect', e => {
+    Object.values(rooms).forEach((v,i) => {
+      if(Object.keys(v.players).includes(socket.id)){
+        delete v.players[socket.id]
+      }
+    })
     delete users[socket.id]
     delete rooms[socket.id]
     updateGlobalRoom()
+    updateInRoom()
   })
 });
 

@@ -140,6 +140,7 @@ const Lobby:FC = () => {
   const {nickname, setNickname} = useContext(GlobalContext);
   const {isGuest, setIsGuest} = useContext(GlobalContext);
   const {targetRoom, setTargetRoom} = useContext(GlobalContext);
+  const {myId, setMyId} = useContext(GlobalContext);
 
   useEffect(() => {
     setLang(navigator.language)
@@ -161,6 +162,7 @@ const Lobby:FC = () => {
       pass:rc_pass,
       ispass:rc_isPass
     })
+    setTargetRoom(myId)
     setRc_isPass(false)
     setRc_pass('')
     setRc_name('')
@@ -187,8 +189,13 @@ const Lobby:FC = () => {
   }
 
   const joinRoomWithPass = () => {
-    if(rooms[targetRoom].pass == inputPass){
-      socket.emit('joinRoom', rooms[targetRoom].ownerid)
+    console.log(rooms,targetRoom, inputPass)
+    let prrom:{[key:string]:getroom} = {}
+    rooms.forEach(v => {
+      prrom[v.ownerid] = v
+    })
+    if(prrom[targetRoom].pass == inputPass){
+      socket.emit('joinRoom', prrom[targetRoom].ownerid)
       setRc_isPass(false)
       setRc_pass('')
       setRc_name('')
@@ -276,6 +283,12 @@ const Room:FC = () => {
   const [cols, setCols] = useState<number>(20);
   const {myId, setMyId} = useContext(GlobalContext);
   const {targetRoom, setTargetRoom} = useContext(GlobalContext);
+  const {isInRoom, setIsInRoom} = useContext(GlobalContext);
+
+  const exitRoom = () => {
+    setIsInRoom(false)
+    setTargetRoom(0)
+  }
 
   useEffect(() => {
     if(myId == targetRoom){
@@ -285,7 +298,12 @@ const Room:FC = () => {
 
   useEffect(() => {
     socket.on('updateInRoom', (d:{[key:string]:{[key:string]:any}}) => {
-
+      if(!d[targetRoom]) return exitRoom()
+      setRoompublic(d[targetRoom]['isPublic'] ? 'public' : 'private')
+      setGamemode(d[targetRoom]['mode'])
+      setRows(d[targetRoom]['rows'])
+      setCols(d[targetRoom]['cols'])
+      setMaxplayer(d[targetRoom]['max'])
     })
   }, [])
 
