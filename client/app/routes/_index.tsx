@@ -2,10 +2,10 @@ import { redirect, type LoaderFunction, type MetaFunction, json, ActionFunction 
 import { Link, useLocation, useNavigate } from "@remix-run/react";
 import { FC, MouseEventHandler, createContext, useContext, useEffect, useState } from "react";
 import {io} from 'socket.io-client'
-import { checkNick, checkPass, sha256 } from "~/data/utils";
+import { checkNick, checkPass, isTeamMode, sha256, strToColor } from "~/data/utils";
 import { connectToMongoDB, getMongoDB }  from '../models/mongodb';
 import { toLang } from "~/data/lang";
-import { getroom } from "~/data/types";
+import { getroom, players } from "~/data/types";
 
 const debugMode = true
 
@@ -234,28 +234,28 @@ const Lobby:FC = () => {
             <div className="rooms">
               {
                 rooms.map((v, i) => (
-                  v.public ?
+                  v.public &&
                   <div className="room" key={i}>
                     <div className="name">{v.name}</div>
                     <div className="code">#{v.code}</div>
                     <div className="player">{v.ownerguest ? `(${toLang(lang, 'guest')})` : ''}{v.owner} - {v.player}/{v.max}</div>
                     <button onClick={e => {joinRoom(v.ownerid, v.ispass, v.pass, v.max, v.player)}}>{toLang(lang, 'join')}</button>
-                  </div> : <></>
+                  </div>
                 ))
               }
             </div>
           </div>
           {
-            msgbox ? 
+            msgbox &&
             (<><div className="back" onMouseDown={e => setMsgbox(0)}></div>
             <div className="msgbox">
               <div>{msgbox == 1 ? toLang(lang, 'room is full') : msgbox == 2 ? toLang(lang, 'enter password') : ''}</div>
-              {msgbox == 2 ? <div>
+              {msgbox == 2 && <div>
                 <input onChange={e => setInputPass(e.target.value)} value={inputPass} type="password" name="" id="" />
                 <button onClick={e => joinRoomWithPass()}>{toLang(lang, 'join')}</button>
-              </div> : <></>}
-              {errorPass ? <div className="errorline">{toLang(lang, 'incorrect password')}</div> : <></>}
-            </div></>) : <></>
+              </div>}
+              {errorPass && <div className="errorline">{toLang(lang, 'incorrect password')}</div>}
+            </div></>)
           }
       </div>:
       mainMenu == 1 ? <div className="form">
@@ -270,17 +270,19 @@ const Lobby:FC = () => {
       }
     </div>
     <div className="profile">{isGuest ? `(${toLang(lang, 'guest')})` : ''}{nickname}</div>
-    {mainMenu != -1 && !isInRoom ? <div className="back" onClick={e => setMainMenu(-1)}>{toLang(lang, 'back')}</div> : <></>}
+    {(mainMenu != -1 && !isInRoom) && <div className="back" onClick={e => setMainMenu(-1)}>{toLang(lang, 'back')}</div>}
   </div>
 }
 
 const Room:FC = () => {
   const {lang, setLang} = useContext(GlobalContext);
+  const [team, setTeam] = useState<string>('');
   const [gamemode, setGamemode] = useState<string>('ffa');
   const [maxplayer, setMaxplayer] = useState<number>(10);
   const [roompublic, setRoompublic] = useState<string>('public');
   const [rows, setRows] = useState<number>(10);
   const [cols, setCols] = useState<number>(20);
+  const [pls, setPls] = useState<{[key:string]:players}>({});
   const {myId, setMyId} = useContext(GlobalContext);
   const {targetRoom, setTargetRoom} = useContext(GlobalContext);
   const {isInRoom, setIsInRoom} = useContext(GlobalContext);
@@ -291,14 +293,21 @@ const Room:FC = () => {
   }
 
   useEffect(() => {
+    if(!isTeamMode(gamemode)) setTeam('')
     if(myId == targetRoom){
       socket.emit('updateRoomSetting', {gamemode, maxplayer, roompublic, rows, cols})
     }
   }, [gamemode, maxplayer, roompublic, rows, cols])
 
   useEffect(() => {
+    setTeam(team.replace(/[^a-zA-Z]+/g, ''))
+    updatePersonalRoomSetting()
+  }, [team])
+
+  useEffect(() => {
     socket.on('updateInRoom', (d:{[key:string]:{[key:string]:any}}) => {
       if(!d[targetRoom]) return exitRoom()
+      setPls(d[targetRoom]['players'])
       setRoompublic(d[targetRoom]['isPublic'] ? 'public' : 'private')
       setGamemode(d[targetRoom]['mode'])
       setRows(d[targetRoom]['rows'])
@@ -307,12 +316,27 @@ const Room:FC = () => {
     })
   }, [])
 
+  const updatePersonalRoomSetting = () => {
+    socket.emit('updatePersonalRoomSetting', {team, targetRoom})
+  }
+
   return <>
     <div className="form">
       <div className="ds">
-
+        {isTeamMode(gamemode) &&
+          <div>
+            {toLang(lang, 'team name')}
+            <input type="text" name="" id="" value={team} onChange={e => {setTeam(e.target.value)}} />
+          </div>}
       </div>
-      <div className="ps"></div>
+      <div className="ps">
+        {
+          Object.values(pls).map((v:players,i) => (
+            <div key={i}>{v.team ?
+              <span style={{color:strToColor(v.team)}}>[{v.team}]</span> : ''}{v.guest ? `(${toLang(lang, 'guest')})` : ''}{v.nickname}</div>
+          ))
+        }
+      </div>
       <div className="os">
         <div>{toLang(lang, 'gamemode')}
         <select disabled={myId != targetRoom} name="" id="" value={gamemode} onChange={e => {setGamemode(e.target.value);}}>
@@ -346,5 +370,6 @@ const Room:FC = () => {
         }} placeholder={toLang(lang, 'board cols')} /></div>
       </div>
     </div>
+    {myId == targetRoom && <button className="start">{toLang(lang, 'start')}</button>}
   </>
 }

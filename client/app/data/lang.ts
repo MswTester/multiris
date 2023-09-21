@@ -135,6 +135,14 @@ const langs:{[key:string]:{[key:string]:string}} = {
         'ko':'잘못된 비밀번호입니다.',
         'en':'Incorrect password.',
     },
+    'team name':{
+        'ko':'팀 이름',
+        'en':'Team Name',
+    },
+    'start':{
+        'ko':'시작',
+        'en':'Start',
+    },
 }
 
 export function toLang(lang:string, data:string){

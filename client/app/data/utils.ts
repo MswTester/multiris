@@ -43,7 +43,7 @@ export function checkPass(str:string):boolean{
   return (str.match(/^[A-Za-z0-9!@#$%^&*()_\-+=~]+$/) && str != '' && str.length > 7) as boolean
 }
 
-export function stringToRandomBrightColorCode(inputString: string): string {
+export function strToColor(inputString: string): string {
   // 문자열을 해시값으로 변환
   let hash = 0;
   for (let i = 0; i < inputString.length; i++) {
@@ -51,18 +51,15 @@ export function stringToRandomBrightColorCode(inputString: string): string {
     hash = (hash << 5) - hash + char;
   }
 
-  // 해시값을 기반으로 밝은 계열의 RGB 색상 생성
-  const seed = hash % 256; // 해시값을 0에서 255 사이의 값으로 변환
-  const minChannelValue = 200; // 각 색상 채널의 최소값
-  const maxChannelValue = 255; // 각 색상 채널의 최대값
-  const randomChannelValue = minChannelValue + (seed / 255) * (maxChannelValue - minChannelValue);
+  // 16진수로 변환하고 양수로 만들기
+  const hexColor = (hash & 0x00ffffff).toString(16);
+  
+  // 6자리로 만들어주기 위해 부족한 길이만큼 0을 채웁니다.
+  const paddedColor = `#${'0'.repeat(6 - hexColor.length)}${hexColor}`;
 
-  // RGB 포맷으로 색상 코드 생성
-  const red = Math.floor(randomChannelValue);
-  const green = Math.floor(randomChannelValue);
-  const blue = Math.floor(randomChannelValue);
+  return paddedColor;
+}
 
-  const colorCode = `rgb(${red},${green},${blue})`;
-
-  return colorCode;
+export function isTeamMode(str:string):boolean{
+  return str == 'tdm' || str == 'com'
 }

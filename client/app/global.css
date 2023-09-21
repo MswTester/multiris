@@ -12155,6 +12155,22 @@ textarea.form-control-lg {
   max-width: 100vw;
   min-width: 150px;
 }
+.y-main .container .form .ps div {
+  margin: 10px;
+  display: flex;
+  justify-content: center;
+  flex-direction: row;
+  width: calc(100% - 20px);
+  border-radius: 3vh;
+  max-width: 100vw;
+  min-width: 150px;
+  background-color: var(--card2-rgb);
+  user-select: none;
+  cursor: pointer;
+  height: min-content;
+  padding: 2vh 0;
+  font-size: min(max(min(2vw, 4vh), 16px), 32px);
+}
 .y-main .container .form .ds, .y-main .container .form .os {
   width: 25%;
   max-width: 100vw;
@@ -12231,6 +12247,18 @@ textarea.form-control-lg {
   overflow-y: auto;
   text-align: center;
   background-color: unset;
+}
+.y-main .container button.start {
+  position: absolute;
+  bottom: -2vh;
+  margin: 0 auto;
+  padding: 3vh;
+  border-radius: 2vh;
+  font-size: min(max(min(2vw, 4vh), 18px), 32px);
+  left: 0;
+  right: 0;
+  width: 15vw;
+  min-width: 150px;
 }
 .y-main .profile {
   position: absolute;

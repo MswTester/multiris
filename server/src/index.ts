@@ -146,6 +146,12 @@ io.on('connection', (socket) => {
     updateInRoom()
   })
 
+  socket.on('updatePersonalRoomSetting', (d) => {
+    let thisRoom = rooms[d['targetRoom']]
+    thisRoom.players[socket.id].team = d['team']
+    updateInRoom()
+  })
+
   socket.on('disconnect', e => {
     Object.values(rooms).forEach((v,i) => {
       if(Object.keys(v.players).includes(socket.id)){

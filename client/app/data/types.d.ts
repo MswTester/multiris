@@ -10,3 +10,5 @@ export interface getroom{
     ownerguest:boolean;
     public:boolean;
 }
+
+export interface players{nickname:string;guest:boolean;boardId:number;team:string;}
