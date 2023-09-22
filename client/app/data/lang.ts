@@ -143,6 +143,18 @@ const langs:{[key:string]:{[key:string]:string}} = {
         'ko':'시작',
         'en':'Start',
     },
+    'players less':{
+        'ko':'시작을 위한 플레이어가 부족합니다.',
+        'en':'Not enough players to start.',
+    },
+    'all players have team':{
+        'ko':'모든 플레이어가 팀에 참가해야 합니다.',
+        'en':'All players must join the team.',
+    },
+    'at least 2 team':{
+        'ko':'시작하려면 적어도 두 개의 팀이 필요합니다.',
+        'en':'You need at least two teams to start.',
+    },
 }
 
 export function toLang(lang:string, data:string){

@@ -259,7 +259,10 @@ const Lobby:FC = () => {
           }
       </div>:
       mainMenu == 1 ? <div className="form">
-          
+          <div>fa</div>
+          <div>fa</div>
+          <div>fa</div>
+          <div>fa</div>
       </div>:
       mainMenu == 2 ? <div className="form">
           
@@ -276,6 +279,7 @@ const Lobby:FC = () => {
 
 const Room:FC = () => {
   const {lang, setLang} = useContext(GlobalContext);
+  const [startError, setStartError] = useState<string>('');
   const [team, setTeam] = useState<string>('');
   const [gamemode, setGamemode] = useState<string>('ffa');
   const [maxplayer, setMaxplayer] = useState<number>(10);
@@ -318,6 +322,15 @@ const Room:FC = () => {
 
   const updatePersonalRoomSetting = () => {
     socket.emit('updatePersonalRoomSetting', {team, targetRoom})
+  }
+
+  const startGame = () => {
+    if(Object.values(pls).length == 1) return setStartError('players less')
+    if(isTeamMode(gamemode) && Object.values(pls).map(v => v.team).includes('')) return setStartError('all players have team')
+    let teams:string[] = []
+    Object.values(pls).forEach(v => teams.includes(v.team) || teams.push(v.team))
+    if(teams.length < 2) return setStartError('at least 2 team')
+    socket.emit('startGame', '')
   }
 
   return <>
@@ -370,6 +383,6 @@ const Room:FC = () => {
         }} placeholder={toLang(lang, 'board cols')} /></div>
       </div>
     </div>
-    {myId == targetRoom && <button className="start">{toLang(lang, 'start')}</button>}
+    {myId == targetRoom && <button className="start" onClick={e => startGame}>{toLang(lang, 'start')}</button>}
   </>
 }

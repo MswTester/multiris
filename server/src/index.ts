@@ -27,7 +27,7 @@ interface players{[key:string]:{
 
 interface board{
   id:number; // index 0
-  map:[][]; // tetris map
+  map:number[][]; // tetris map
 }
 
 interface rooms{[key:string]:{
@@ -150,6 +150,39 @@ io.on('connection', (socket) => {
     let thisRoom = rooms[d['targetRoom']]
     thisRoom.players[socket.id].team = d['team']
     updateInRoom()
+  })
+  
+  socket.on('startGame', (d) => {
+    let thisRoom = rooms[socket.id]
+    thisRoom.status = 1
+    let map:number[][] = []
+    for(let j = 0; j < thisRoom.cols; j++){
+      let ar:number[] = []
+      for(let k = 0; k < thisRoom.rows; k++){
+        ar.push(0)
+      }
+      map.push(ar)
+    }
+    if(thisRoom.mode == 'com'){
+      let teams:string[] = []
+      Object.values(thisRoom.players).forEach((v,i) => {
+        teams.includes(v.team) || teams.push(v.team)
+      })
+      teams.forEach((v:string, i:number) => {
+        thisRoom.boards.push({id:i, map:[...map]})
+        Object.keys(thisRoom.players).forEach((v2, i2) => {
+          thisRoom.players[v2].team == v && (thisRoom.players[v2].boardId = i)
+        })
+      })
+    } else {
+      Object.keys(thisRoom.players).forEach((v,i) => {
+        thisRoom.boards.push({id:i, map:[...map]})
+        thisRoom.players[v].boardId = i
+      })
+    }
+
+    socket.emit('startGame', rooms)
+    socket.broadcast.emit('startGame', rooms)
   })
 
   socket.on('disconnect', e => {
