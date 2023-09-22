@@ -259,10 +259,7 @@ const Lobby:FC = () => {
           }
       </div>:
       mainMenu == 1 ? <div className="form">
-          <div>fa</div>
-          <div>fa</div>
-          <div>fa</div>
-          <div>fa</div>
+          {['40line', 'sprint']}
       </div>:
       mainMenu == 2 ? <div className="form">
           
