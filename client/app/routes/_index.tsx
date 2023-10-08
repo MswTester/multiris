@@ -7,7 +7,7 @@ import { connectToMongoDB, getMongoDB }  from '../models/mongodb';
 import { toLang } from "~/data/lang";
 import { getroom, players } from "~/data/types";
 
-const debugMode = true
+const debugMode = false
 
 export const meta: MetaFunction = () => {
   return [
