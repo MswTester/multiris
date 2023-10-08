@@ -43,7 +43,6 @@ export default function Login(){
             setError(cond ? 'cant find account' : condsuc ? 'creation success' : condregex ? 'regex failed' :
             already ? 'already used nickname' : '')
         }
-
         setLang(navigator.language)
     }, [location.search])
     

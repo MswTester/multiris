@@ -16,7 +16,7 @@ export const meta: MetaFunction = () => {
   ];
 };
 
-const socket = io('localhost:3003')
+const socket = io('localhost:80/index')
 
 const GlobalContext = createContext<any>({})
 
@@ -75,7 +75,7 @@ export const loader:LoaderFunction = async () => {
 return json({ ok :true })
 }
 
-
+// main component
 export default function Index() {
   const [lang, setLang] = useState<string>('en-US')
   const [myId, setMyId] = useState<string>('') // my socket id
@@ -93,21 +93,29 @@ export default function Index() {
       if(debugMode) return
       navigate('/login')
     } else {
-      socket.on('checkNickExist', (d:boolean) => {
-        if(debugMode) return
-        if(d) navigate('/login?res=already')
-      })
+      socket.on('checkNickExist', checkNickExist)
       res.length == 3 ? setIsGuest(false) : false
-      socket.on('getMyId', (d:string) => {
-        setMyId(d)
-      })
+      socket.on('getMyId', getMyId)
       socket.emit('checkNickExist', res[1][1])
       socket.emit('sucLogin', res.map(v => v[1]))
       setNickname(res[1][1])
       setIsLogined(true)
     }
     setLang(navigator.language)
-  }, [location.search])
+    return () => {
+      socket.off('checkNickExist', checkNickExist)
+      socket.off('getMyId', getMyId)
+    }
+  }, [])
+
+  const checkNickExist = (d:boolean) => {
+    if(debugMode) return
+    if(d) navigate('/login?res=already')
+  }
+
+  const getMyId = (d:string) => {
+    setMyId(d)
+  }
 
   return <GlobalContext.Provider value={{
     isInRoom, setIsInRoom,
@@ -211,6 +219,7 @@ const Lobby:FC = () => {
   useEffect(() => {
     setErrorPass(false)
   }, [inputPass, msgbox])
+
   return <div className="y-main main">
     <div className="title">MULTIRIS</div>
     <div className="container">
