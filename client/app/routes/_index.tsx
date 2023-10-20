@@ -48,7 +48,6 @@ export const action:ActionFunction = async ({request}) => {
   }
   if(!(checkNick(tr[0].toString()) && checkPass(res[1][1].toString()))) return redirect('/login?res=condition')
 
-
   // 데이터 조회 예시
   if(isRegister){
     const al = await collection.findOne({nickname:tr[0]});
