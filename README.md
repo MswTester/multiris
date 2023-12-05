@@ -5,7 +5,7 @@
 - - -
 * Using Engine
   * RemixJs (reactjs with typescript)
-  * express (for socket server)
+  * NestJs(fastify) (for socket server)
   * socket.io & socket.io-client
   * mongoDB
   * Styles from Sass & Bootstrap
